@@ -23,6 +23,10 @@ function addRoom(text) {
 
 function getRoomCoordinates(room) {
   return room.getBoundingClientRect();
+  // TODO: Tried to clone this thinking perhaps the assignment was fucking things up.
+  // const { top, bottom, left, right } = room.getBoundingClientRect();
+  // const rect = Object.assign({}, { top, bottom, left, right })
+  // return rect
 }
 
 function wouldBeHittingOtherRoom(roomRect){
@@ -31,7 +35,7 @@ function wouldBeHittingOtherRoom(roomRect){
   const b1 = roomRect.bottom
   const r1 = roomRect.right
   let wouldHit = false
-  const margin = 5
+  const margin = 0
   rooms.map(room => {
     if (room.id === roomRect.id ) return
     const r = getRoomCoordinates(room)    
@@ -62,7 +66,9 @@ function makeDraggable(element) {
 
   function dragMouseDown(e) {
     e = e || window.event
-    if(!inDraggableArea(e)) return
+
+    if(!inDraggableArea(e) || newPositionIsBlocked(e)) return
+
     e.preventDefault()
     // get the mouse cursor position at startup:
     pos3 = e.clientX
@@ -72,10 +78,7 @@ function makeDraggable(element) {
     document.onmousemove = elementDrag
   }
 
-  function elementDrag(e) {
-    e = e || window.event
-    e.preventDefault()
-
+  function newPositionIsBlocked(e) {
     // calculate the new cursor position:
     const p1 = pos3 - e.clientX
     const p2 = pos4 - e.clientY
@@ -86,16 +89,23 @@ function makeDraggable(element) {
     whereItWouldBe.id = element.id
 
     console.log(`wouldBeHittingOtherRoom = ${wouldBeHittingOtherRoom(whereItWouldBe)}`)
-    if (wouldBeHittingOtherRoom(whereItWouldBe)) return
-    
-    pos1 = p1
-    pos2 = p2
+    return wouldBeHittingOtherRoom(whereItWouldBe)
+  }
+
+  function elementDrag(e) {
+    e = e || window.event
+    if(newPositionIsBlocked(e)) return
+
+    e.preventDefault()
+
+    pos1 = pos3 - e.clientX
+    pos2 = pos4 - e.clientY
     pos3 = e.clientX
     pos4 = e.clientY
 
     // set the element's new position:
-    element.style.top = (element.offsetTop - pos2) + "px"
-    element.style.left = (element.offsetLeft - pos1) + "px"
+    element.style.top = (element.offsetTop - pos2) + 'px'
+    element.style.left = (element.offsetLeft - pos1) + 'px'
   }
 
   function closeDragElement() {
