@@ -23,10 +23,6 @@ function addRoom(text) {
 
 function getRoomCoordinates(room) {
   return room.getBoundingClientRect();
-  // TODO: Tried to clone this thinking perhaps the assignment was fucking things up.
-  // const { top, bottom, left, right } = room.getBoundingClientRect();
-  // const rect = Object.assign({}, { top, bottom, left, right })
-  // return rect
 }
 
 function wouldBeHittingOtherRoom(roomRect){
@@ -35,7 +31,8 @@ function wouldBeHittingOtherRoom(roomRect){
   const b1 = roomRect.bottom
   const r1 = roomRect.right
   let wouldHit = false
-  const margin = 0
+  const margin = 2
+
   rooms.map(room => {
     if (room.id === roomRect.id ) return
     const r = getRoomCoordinates(room)    
@@ -45,9 +42,8 @@ function wouldBeHittingOtherRoom(roomRect){
     const r2 = r.right + margin;
 
     if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
-
     wouldHit = true;
-
+    
   })
 
   return wouldHit
@@ -57,15 +53,17 @@ function makeDraggable(element) {
   let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
   element.onmousedown = dragMouseDown
 
+  // this draggable area is so that we don't stop the resize control.
   function inDraggableArea(e) {
     const { top, bottom, left, right } = getRoomCoordinates(element)
     const x = e.clientX
     const y = e.clientY
-    return y > top && y < (bottom - 10) && x > left && x < (right - 20)
+    return y > top && y < (bottom - 20) && x > left && x < (right - 20)
   }
 
   function dragMouseDown(e) {
     e = e || window.event
+    console.log(pos1, pos2, pos3, pos4, e.clientX, e.clientY)
 
     if(!inDraggableArea(e) || newPositionIsBlocked(e)) return
 
@@ -88,12 +86,13 @@ function makeDraggable(element) {
     whereItWouldBe.left = (element.offsetLeft - p2)
     whereItWouldBe.id = element.id
 
-    console.log(`wouldBeHittingOtherRoom = ${wouldBeHittingOtherRoom(whereItWouldBe)}`)
+    // console.log(`wouldBeHittingOtherRoom = ${wouldBeHittingOtherRoom(whereItWouldBe)}`)
     return wouldBeHittingOtherRoom(whereItWouldBe)
   }
 
   function elementDrag(e) {
     e = e || window.event
+    console.log(pos1, pos2, pos3, pos4, e.clientX, e.clientY)
     if(newPositionIsBlocked(e)) return
 
     e.preventDefault()
