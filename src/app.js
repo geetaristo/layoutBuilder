@@ -65,7 +65,7 @@ function makeDraggable(element) {
     e = e || window.event
     console.log(pos1, pos2, pos3, pos4, e.clientX, e.clientY)
 
-    if(!inDraggableArea(e) || newPositionIsBlocked(e)) return
+    if(!inDraggableArea(e) || newPositionIsBlocked(e)) return true
 
     e.preventDefault()
     // get the mouse cursor position at startup:
@@ -93,7 +93,7 @@ function makeDraggable(element) {
   function elementDrag(e) {
     e = e || window.event
     console.log(pos1, pos2, pos3, pos4, e.clientX, e.clientY)
-    if(newPositionIsBlocked(e)) return
+    if(newPositionIsBlocked(e)) return true
 
     e.preventDefault()
 
